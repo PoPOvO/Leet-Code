@@ -1,6 +1,6 @@
 public class Solution {
     public boolean checkRecord(String s) {
-	   	int prevCharCodePointA = -1;           //保存上一个A字符的码点
+	   	int prevCharCodePointA = -1;
 	   	
 	   	for (int i = 0; i < s.length(); i++) {	   		
 	   		if (s.codePointAt(i) == prevCharCodePointA || i > 1 && s.codePointAt(i-2) == s.codePointAt(i-1)
