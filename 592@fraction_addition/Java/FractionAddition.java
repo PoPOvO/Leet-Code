@@ -1,39 +1,26 @@
-package org.xli.fraction_addition;
-
-import java.util.Arrays;
-
 public class FractionAddition {
-    public String fractionAddition(String expression) {
+   public String fractionAddition(String expression) {
     	expression = expression.replaceAll("\\+", ":+");
     	expression = expression.replaceAll("-", ":-");
     	String[] items = expression.split(":");
-    	int leastCommonMultiple = 0;                         //所有分数分母的最小公倍数
-    	int greatestCommonDivisor = 0;                       //分子和分母的最大公约数
-    	int sum = 0;
+    	int up = 0;
+    	int down = 1;
+    	int gcd = -1;
     	
-    	if (expression.codePointAt(0) == ":".codePointAt(0)) {
+    	if (expression.codePointAt(0) == ":".codePointAt(0)) {       //第一个数为负
     		items = Arrays.copyOfRange(items, 1, items.length);
     	}
     	
-    	for (int i = 0; i < items.length; i++) {             //计算分母的最小公倍数
-    		String[] integers = items[i].split("/");
-    		if (i == 0) {
-    			leastCommonMultiple = Integer.valueOf(integers[1]);    			
-    		} else {
-    			leastCommonMultiple = leastCommonMultiple(leastCommonMultiple, Integer.valueOf(integers[1]));
-    		}
+    	for (int i = 0; i < items.length; i++) {                     //分子相加如a/b+c/d = (ad + bc)/bd
+    		String[] item = items[i].split("/");
+    		up = up * Integer.valueOf(item[1]) + down * Integer.valueOf(item[0]);
+    		down *= Integer.valueOf(item[1]);
     	}
     	
-    	for (int i = 0; i < items.length; i++) {             //根据最小公倍数修改分子，并计算所有分子的和
-    		String[] integers = items[i].split("/");
-    		sum += Integer.valueOf(integers[0]) * (leastCommonMultiple / Integer.valueOf(integers[1]));
-    	}
-    	
-    	greatestCommonDivisor = greatestCommonDivisor(Math.abs(sum), leastCommonMultiple); //求出分子和分母的最大公约数，进行化简。小心sum计算完可能为负数，要使用绝对值
-    	sum /= greatestCommonDivisor;
-    	leastCommonMultiple /= greatestCommonDivisor;  
-
-    	return sum + "/" + leastCommonMultiple;
+    	gcd = greatestCommonDivisor(Math.abs(up), down);
+    	up /= gcd;
+    	down /= gcd;
+    	return up + "/" + down;
     }
     
     //最大公约数
@@ -46,17 +33,4 @@ public class FractionAddition {
         }
         return m;
     }
-    
-    //最小公倍数
-    private int leastCommonMultiple(int m, int n) {
-    	for (int i = m > n ? m : n;; i++) {
-    		if (i % m == 0 && i % n == 0) {
-    			return i;
-    		}
-    	}
-    }
-	
-	public static void main(String[] args) {
-		System.err.println(new FractionAddition().fractionAddition("1/3-1/2"));
-	}
 }
