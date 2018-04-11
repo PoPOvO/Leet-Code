@@ -3,46 +3,27 @@ public class AddTwoNumbers {
 		ListNode res = new ListNode(0);
 		ListNode current = res;
 		ListNode prev = res;
+		int carry = 0;
 		
-		while (l1 != null && l2 != null) {
-			int add = l1.val + l2.val;
-
-			if (current == null) 
-				prev.next = current = new ListNode(0);
-			prev = current;                                             //prev用于连接链表
-			if (add > 9) {
-				current.next = new ListNode(add / 10); 			//相加最高18，取余后为8，不会爆10
-				current.val += add % 10;
+		while (l1 != null || l2 != null || carry != 0) {
+			int add = (l1 != null && l2 != null) ? l1.val + l2.val : 0;          //add在有三种情况:
+			if ((l1 == null || l2 == null) && l1 != l2) {                        //1、l1和l2都不为null，为其和
+				l1 = (l1 != null) ? l1 : l2;                                     //2、l1或l2中一个为null，则add为非null链表的元素
+				if (l1 == l2) l2 = null;                                         //3、l1和l2都为null，但存在进位，则该次add为0
+				add = l1.val;
 			}
-			else {
-				current.val += add;
-				if (current.val > 9)                                    //低位进位
-					dealCarry(current, current.val);
-			}
-			current = current.next;                                     //若进位了，则当前current不为null，可以进行判断
+			
+			if (current == null) prev.next = current = new ListNode(0);
+			prev = current;
+			current.val = (add + carry) % 10;
+			carry = (add + carry) / 10;
+			
+			if (l1 != null && l2 != null) l2 = l2.next;
+			else if (l1 == null && l2 == null) break;                            //l1和l2都为null，但该次为进位
 			l1 = l1.next;
-			l2 = l2.next;
-		}
-		
-		if (l1 != null || l2 != null) {
-			l1 = (l1 != null) ? l1 : l2;	
-			while (l1 != null) {
-				if (current == null)
-					prev.next = current = new ListNode(0);
-				current.val += l1.val;
-				if (current.val > 9) 
-					dealCarry(current, current.val);
-				prev = current;
-				current = current.next;
-				l1 = l1.next;
-			}
+			current = null;
 		}
 		return res;
-	}
-
-	private void dealCarry(ListNode node, int value) {
-		node.next = new ListNode(value / 10); 			//相加最高18，取余后为8，不会爆10
-		node.val = value % 10;
 	}
 }
 
